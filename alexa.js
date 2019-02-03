@@ -14,32 +14,29 @@ http.createServer(function (req, response) {
   });
   req.on('end', function () {
       message = unescape(message);
-      console.log(message);
+      if (header == 'unity'){
+          //deal with unity messages
+          console.log("UNITY: " + message);
+
+
+
+
+
+         //response.end('data to send');
+         response.end();
+      } else if (header ==  'alexa'){
+          //deal with alexa messages
+          console.log("ALEXA: " + message);
+
+
+
+
+
+          response.end();
+      } else {
+          response.end();
+      }
   });
-
-
-
-  if (header == 'unity'){
-      //deal with unity messages
-
-
-
-
-
-     //response.end('data to send');
-     response.end();
-  } else if (header ==  'alexa'){
-      //deal with alexa messages
-
-
-
-
-
-
-
-  } else {
-      response.end();
-  }
 }).listen(port);
 
 console.log('Starting Node Server');

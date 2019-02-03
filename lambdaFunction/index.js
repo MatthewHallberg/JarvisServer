@@ -1,100 +1,57 @@
 var http = require('http')
 
-exports.handler = (event, context) => {
+exports.handler = (event, context, callback) => {
+    if (event.request.type === 'LaunchRequest') {
+        callback(null, buildResponse('initialized'));
+    } else if (event.request.type === 'IntentRequest') {
+        const intentName = event.request.intent.name;
+        if (intentName === 'AMAZON.SearchAction<object@WeatherForecast>') {
+ 
 
-  try {
+                ForwardRequest('weather',function () {
+                       callback(null, buildResponse("blah"));
+                });
 
-    if (event.session.new) {
-      // New Session
-      console.log("NEW SESSION")
+ 
+        } else {
+            callback(null, buildResponse("jarvis command not found"));
+        }
+    } else if (event.request.type === 'SessionEndedRequest') {
+        callback(null, buildResponse('Session Ended'));
     }
+ 
+};
 
-    switch (event.request.type) {
-
-      case "LaunchRequest":
-        // Launch Request
-        console.log(`LAUNCH REQUEST`)
-          context.succeed(
-            generateResponse(
-             buildSpeechletResponse("Jarvis initialized"),
-             {}
-            )
-          )
-        break;
-        
-      case "IntentRequest":
-        // Intent Request
-        console.log(`INTENT REQUEST`)
-        var intent = event.request.intent;
-        //context.succeed(generateResponse(buildSpeechletResponse(intent.name, false),{}))
-        switch(intent.name){
-          case "YouTubeVideo":
-             context.succeed(generateResponse(buildSpeechletResponse("Jarvis YouTube"),{}))
-             break;
-          case "Display":
-             var displayNum = intent.slots.displayNum.value
-             context.succeed(generateResponse(buildSpeechletResponse('Jarvis Selecting display ' + displayNum),{}))
-             break;
-          case "AMAZON.SearchAction<object@WeatherForecast>":
-            
-            ForwardRequest('weather');
-            
-             //context.succeed(generateResponse(buildSpeechletResponse(intent.slot.location.name.value),{}))
-             break;
-          default:
-            context.succeed(generateResponse(buildSpeechletResponse("Jarvis Command not Found"),{}))
-          }
-        break;
-        
-      case "SessionEndedRequest":
-        // Session Ended Request
-        console.log(`SESSION ENDED REQUEST`)
-        break;
-
-      default:
-        context.fail(`INVALID REQUEST TYPE: ${event.request.type}`)
-
-    }
-
-  } catch(error) { context.fail(`Exception: ${error}`) }
-
+function buildResponse(response) {
+    return {
+        version: '1.0',
+        response: {
+            outputSpeech: {
+                type: 'PlainText',
+                text: response,
+            },
+            shouldEndSession: false,
+        },
+        sessionAttributes: {},
+    };
 }
 
-// Helpers
-function ForwardRequest(request){
+function ForwardRequest(message,callback){
   const options = {
     hostname: 'www.matthewhallberg.com',
     port: 3000,
     method: 'POST',
     headers: {
-      'head': request
+      'head': 'alexa'
     }
   }
   const req = http.request(options, (res) => {
-    console.log(`statusCode: ${res.statusCode}`)
+    callback()
   })
+  
   req.on('error', (error) => {
-    console.error(error)
+    callback()
   })
-  req.write('')
+  req.write(message)
   req.end()
 }
-
-var buildSpeechletResponse = (outputText) => {
-  return {
-    outputSpeech: {
-      type: "PlainText",
-      text: outputText
-    },
-    shouldEndSession: false
-  }
-}
-
-var generateResponse = (response, sessionAttributes) => {
-  return {
-    version: "1.0",
-    sessionAttributes: sessionAttributes,
-    response: response
-  }
-}
-  
