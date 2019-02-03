@@ -4,18 +4,32 @@ exports.handler = (event, context, callback) => {
     if (event.request.type === 'LaunchRequest') {
         callback(null, buildResponse('initialized'));
     } else if (event.request.type === 'IntentRequest') {
-        const intentName = event.request.intent.name;
-        if (intentName === 'AMAZON.SearchAction<object@WeatherForecast>') {
- 
-
-                ForwardRequest('weather',function () {
-                       callback(null, buildResponse("blah"));
+        const currIntent = event.request.intent;
+         switch(currIntent.name){
+          case "YouTubeVideo":
+              try {
+                var author = currIntent.slots.author.value;
+                var title = currIntent.slots.videoTitle.value;
+                 ForwardRequest('youtube:' + author + ":" + title,function () {
+                   callback(null, buildResponse("fetching video"));
                 });
-
- 
-        } else {
+              }catch(e){
+                 callback(null, buildResponse("please specify an author and title"));
+              }
+             break;
+          case "Display":
+              try {
+                 var displayNum = currIntent.slots.displayNum.value;
+                 ForwardRequest('display:' + displayNum,function () {
+                   callback(null, buildResponse("selecting display " + displayNum));
+                 });
+            }catch(e){
+              callback(null, buildResponse("please specify a display number"));
+            }
+             break;
+          default:
             callback(null, buildResponse("jarvis command not found"));
-        }
+          }
     } else if (event.request.type === 'SessionEndedRequest') {
         callback(null, buildResponse('Session Ended'));
     }
