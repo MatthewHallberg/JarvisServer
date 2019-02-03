@@ -1,76 +1,45 @@
-var https = require('https')
+var http = require('http');
 
-exports.handler = (event, context) => {
+var port = 3000;
 
-  try {
+//create a server object:
+http.createServer(function (req, response) {
 
-    if (event.session.new) {
-      // New Session
-      console.log("NEW SESSION")
-    }
+  //first get header to figure out if message is from unity or alexa
+  var header = req.headers['head'];
+  //next get message from post request
+  var message = '';
+  req.on('data', function (data) {
+    message += data;
+  });
+  req.on('end', function () {
+      message = unescape(message);
+      console.log(message);
+  });
 
-    switch (event.request.type) {
 
-      case "LaunchRequest":
-        // Launch Request
-        console.log(`LAUNCH REQUEST`)
-          context.succeed(
-            generateResponse(
-             buildSpeechletResponse("Jarvis initialized", false),
-             {}
-            )
-          )
-        break;
-        
-      case "IntentRequest":
-        // Intent Request
-        console.log(`INTENT REQUEST`)
-        var intent = event.request.intent;
-        //context.succeed(generateResponse(buildSpeechletResponse(intent.name, false),{}))
-        switch(intent.name){
-          case "YouTubeVideo":
-             context.succeed(generateResponse(buildSpeechletResponse("Jarvis YouTube", false),{}))
-             break;
-          case "Display":
-             var displayNum = intent.slots.displayNum.value
-             context.succeed(generateResponse(buildSpeechletResponse('Jarvis Selecting display ' + displayNum, false),{}))
-             break;
-          case "AMAZON.PlaybackAction<object@MusicCreativeWork>":
-             context.succeed(generateResponse(buildSpeechletResponse('Jarvis Music', false),{}))
-             break;
-          default:
-            context.succeed(generateResponse(buildSpeechletResponse("Jarvis Command not Found", false),{}))
-          }
-        break;
-        
-      case "SessionEndedRequest":
-        // Session Ended Request
-        console.log(`SESSION ENDED REQUEST`)
-        break;
 
-      default:
-        context.fail(`INVALID REQUEST TYPE: ${event.request.type}`)
+  if (header == 'unity'){
+      //deal with unity messages
 
-    }
 
-  } catch(error) { context.fail(`Exception: ${error}`) }
 
-}
 
-// Helpers
-var buildSpeechletResponse = (outputText, shouldEndSession) => {
-  return {
-    outputSpeech: {
-      type: "PlainText",
-      text: outputText
-    },
-    shouldEndSession: shouldEndSession
+
+     //response.end('data to send');
+     response.end();
+  } else if (header ==  'alexa'){
+      //deal with alexa messages
+
+
+
+
+
+
+
+  } else {
+      response.end();
   }
-}
-var generateResponse = (speechletResponse, sessionAttributes) => {
-  return {
-    version: "1.0",
-    sessionAttributes: sessionAttributes,
-    response: speechletResponse
-  }
-}
+}).listen(port);
+
+console.log('Starting Node Server');
