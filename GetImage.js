@@ -21,10 +21,6 @@ app.router.get('/getImage', function() {
 	  
 });
 
-app.start(3000,"198.252.105.8");
+app.start(12001);
 
-console.log('Starting Node Server');
-
-
-
-
+console.log('starting image server');

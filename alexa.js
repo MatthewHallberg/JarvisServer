@@ -26,20 +26,15 @@ http.createServer(function (req, response) {
           if (message == 'clear'){
             currMessage = '';
           }
-         response.end(currMessage);
-      } else if (header ==  'alexa'){
+          response.end(currMessage);
+      } else if (header == 'alexa'){
           //deal with alexa messages
           var words = message.split(':');
-          switch(words[0]){
-            case 'youtube':
-              var query = words[1] + " " + words[2];
-              youtube.GetYouTubeLink(query,SetCurrMessage);
-              break;
-            case 'display':
-              currMessage = message;
-              break;
-            default:
-               currMessage = message;
+          if (words[0] == 'youtube'){
+            var query = words[1] + " " + words[2];
+            youtube.GetYouTubeLink(query,SetCurrMessage);
+          } else {
+            currMessage = message;
           }
           response.end();
       } else {
