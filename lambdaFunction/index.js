@@ -17,6 +17,16 @@ exports.handler = (event, context, callback) => {
                  callback(null, buildResponse("please specify an author and title"));
               }
              break;
+          case "Website":
+              try {
+                var siteName = currIntent.slots.siteName.value;
+                 ForwardRequest('website:' + siteName,function () {
+                   callback(null, buildResponse('loading ' + siteName + '.com'));
+                });
+              }catch(e){
+                 callback(null, buildResponse("please specify a website"));
+              }
+             break;
           case "Display":
               try {
                  var displayNum = currIntent.slots.displayNum.value;
@@ -26,6 +36,11 @@ exports.handler = (event, context, callback) => {
             }catch(e){
               callback(null, buildResponse("please specify a display number"));
             }
+             break;
+           case "What":
+             ForwardRequest('what',function () {
+               callback(null, buildResponse("scanning item"));
+             });
              break;
           default:
             callback(null, buildResponse("jarvis command not found"));

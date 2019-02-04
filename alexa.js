@@ -22,11 +22,9 @@ http.createServer(function (req, response) {
   req.on('end', function () {
       message = unescape(message);
       if (header == 'unity'){
-          //deal with unity messages
-          if (message == 'clear'){
-            currMessage = '';
-          }
+          //respond to unity nd then clear message
           response.end(currMessage);
+          currMessage = '';
       } else if (header == 'alexa'){
           //deal with alexa messages
           var words = message.split(':');
