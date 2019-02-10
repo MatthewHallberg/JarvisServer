@@ -7,7 +7,6 @@ var currMessage = "";
 
 function SetCurrMessage(message){
   currMessage = message;
-  console.log(message);
 }
 
 //create a server object:
@@ -34,6 +33,7 @@ http.createServer(function (req, response) {
           } else {
             currMessage = message;
           }
+          console.log(message);
           response.end();
       } else {
           response.end();

@@ -8,7 +8,6 @@ app.use(flatiron.plugins.http);
 app.router.get('/getImage', function() {
 	  var self = this;
 	  var requestUrl = this.req.headers['head'];
-	  console.log(requestUrl); 
 
 	  var options = {
 	  	streamType: 'jpeg',

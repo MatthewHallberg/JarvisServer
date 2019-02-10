@@ -27,19 +27,34 @@ exports.handler = (event, context, callback) => {
                  callback(null, buildResponse("please specify a website"));
               }
              break;
-          case "Display":
+          case "SelectDisplay":
               try {
-                 var displayNum = currIntent.slots.displayNum.value;
-                 ForwardRequest('display:' + displayNum,function () {
-                   callback(null, buildResponse("selecting display " + displayNum));
-                 });
+                var displayNum = currIntent.slots.displayNum.value;
+                ForwardRequest('display:' + "select:" + displayNum,function () {
+                 callback(null, buildResponse("selecting display " + displayNum));
+                });
             }catch(e){
               callback(null, buildResponse("please specify a display number"));
             }
              break;
+           case "DestroyDisplay":
+              try {
+                var displayNum = currIntent.slots.displayNum.value;
+                ForwardRequest('display:' + "destroy:" + displayNum,function () {
+                 callback(null, buildResponse("destroying display " + displayNum));
+                });
+            }catch(e){
+              callback(null, buildResponse("please specify a display number"));
+            }
+             break;
+           case "CreateDisplay":
+                ForwardRequest('display:' + "create",function () {
+                 callback(null, buildResponse("creating display"));
+                });
+             break;
            case "What":
              ForwardRequest('what',function () {
-               callback(null, buildResponse("scanning item"));
+               callback(null, buildResponse(""));
              });
              break;
           default:
